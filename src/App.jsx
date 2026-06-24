@@ -25,23 +25,18 @@ export default function App() {
     if (!selectedMood || !message) return;
     setLoading(true);
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1000,
-        messages: [
-          {
-            role: "user",
-            content: `I am feeling ${selectedMood.label} today. ${message}. Give me a short, warm, supportive response in 2-3 lines like a caring friend.`,
-          },
-        ],
-      }),
-    });
+    await new Promise((r) => setTimeout(r, 1500));
 
-    const data = await response.json();
-    const reply = data.content[0].text;
+    const replies = {
+      Happy: "That's wonderful! Keep spreading that positive energy! 🌟",
+      Sad: "It's okay to feel sad. You're stronger than you think! 💙",
+      Angry: "Take a deep breath. Your feelings are valid! 🌊",
+      Anxious: "One step at a time. You've handled tough times before! 💪",
+      Tired: "Rest is productive too! Take care of yourself! 😴",
+      Motivated: "Amazing energy! Channel it into something great! 🔥",
+    };
+
+    const reply = replies[selectedMood.label];
     setAiReply(reply);
     setMoodHistory((prev) => [
       { mood: selectedMood, message, reply, time: new Date().toLocaleTimeString() },
@@ -53,13 +48,11 @@ export default function App() {
   return (
     <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)", padding: "20px", fontFamily: "sans-serif", color: "white" }}>
       
-      {/* Header */}
       <div style={{ textAlign: "center", marginBottom: "30px" }}>
         <h1 style={{ fontSize: "2.5rem", margin: 0 }}>🧠 MindSync AI</h1>
         <p style={{ color: "#aaa", marginTop: "8px" }}>Your personal mental wellness companion</p>
       </div>
 
-      {/* Mood Selection */}
       <div style={{ background: "rgba(255,255,255,0.05)", borderRadius: "16px", padding: "20px", marginBottom: "20px" }}>
         <h2 style={{ marginTop: 0, fontSize: "1.1rem", color: "#ccc" }}>How are you feeling today?</h2>
         <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
@@ -68,14 +61,10 @@ export default function App() {
               key={mood.label}
               onClick={() => handleMoodSelect(mood)}
               style={{
-                padding: "12px 20px",
-                borderRadius: "50px",
+                padding: "12px 20px", borderRadius: "50px",
                 border: selectedMood?.label === mood.label ? `2px solid ${mood.color}` : "2px solid transparent",
                 background: selectedMood?.label === mood.label ? `${mood.color}22` : "rgba(255,255,255,0.08)",
-                color: "white",
-                fontSize: "1rem",
-                cursor: "pointer",
-                transition: "all 0.2s",
+                color: "white", fontSize: "1rem", cursor: "pointer",
               }}
             >
               {mood.emoji} {mood.label}
@@ -84,7 +73,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* Message Input */}
       <div style={{ background: "rgba(255,255,255,0.05)", borderRadius: "16px", padding: "20px", marginBottom: "20px" }}>
         <h2 style={{ marginTop: 0, fontSize: "1.1rem", color: "#ccc" }}>Tell me more...</h2>
         <textarea
@@ -111,7 +99,6 @@ export default function App() {
         </button>
       </div>
 
-      {/* AI Reply */}
       {aiReply && (
         <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: "16px", padding: "20px", marginBottom: "20px", borderLeft: `4px solid ${selectedMood?.color}` }}>
           <h2 style={{ marginTop: 0, fontSize: "1rem", color: "#aaa" }}>🤖 MindSync says:</h2>
@@ -119,7 +106,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Mood History */}
       {moodHistory.length > 0 && (
         <div style={{ background: "rgba(255,255,255,0.05)", borderRadius: "16px", padding: "20px" }}>
           <h2 style={{ marginTop: 0, fontSize: "1.1rem", color: "#ccc" }}>📊 Recent Moods</h2>
